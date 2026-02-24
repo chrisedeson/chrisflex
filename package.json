@@ -1,6 +1,6 @@
 {
   "name": "chrisflex",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Lean AI coding workflow manager with persistent memory. Solves context compaction, 200-line doc limits, and token waste.",
   "type": "module",
   "bin": {
@@ -55,10 +55,14 @@
     "url": "https://github.com/chrisedeson/chrisflex/issues"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.78.0",
     "@clack/prompts": "^1.0.1",
     "commander": "^14.0.3",
     "dayjs": "^1.11.19",
+    "ink": "^6.8.0",
+    "openai": "^6.25.0",
     "picocolors": "^1.1.1",
+    "react": "^19.2.4",
     "simple-git": "^3.32.2",
     "tinyexec": "^1.0.2",
     "tinyglobby": "^0.2.15",
@@ -67,6 +71,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.15.0",
+    "@types/react": "^19.2.14",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",
     "vitest": "^3.0.0"

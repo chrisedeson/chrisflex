@@ -14,6 +14,10 @@ export default defineConfig([
     banner: {
       js: '#!/usr/bin/env node',
     },
+    // Handle JSX in tsx files
+    esbuildOptions(options) {
+      options.jsx = 'automatic';
+    },
   },
   // Library entry — no shebang
   {
@@ -25,5 +29,8 @@ export default defineConfig([
     clean: false, // Don't wipe cli.mjs
     splitting: false,
     sourcemap: true,
+    esbuildOptions(options) {
+      options.jsx = 'automatic';
+    },
   },
 ]);

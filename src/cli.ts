@@ -9,6 +9,7 @@ import { resumeCommand } from './commands/resume.js';
 import { quickCommand } from './commands/quick.js';
 import { settingsCommand } from './commands/settings.js';
 import { installCommand } from './commands/install.js';
+import { authCommand } from './commands/auth.js';
 import { showBanner } from './lib/banner.js';
 import * as log from './lib/logger.js';
 
@@ -17,7 +18,7 @@ const program = new Command();
 program
   .name('chrisflex')
   .description('Lean AI coding workflow manager with persistent memory')
-  .version('0.1.1');
+  .version('0.2.0');
 
 // Init — create .chrisflex/ in current project
 program
@@ -156,6 +157,14 @@ program
     chrisflex quick "fixed typo in readme" Log a micro task (done)
     chrisflex quick -s todo "add tests"    Log a todo item
 
+  ${'\x1b[1m'}AI Chat${'\x1b[0m'}
+    chrisflex                              Launch interactive AI REPL
+    chrisflex chat                         Same — start AI chat mode
+    chrisflex auth github                  Connect GitHub Models (free!)
+    chrisflex auth anthropic               Connect Anthropic (Claude)
+    chrisflex auth openai                  Connect OpenAI
+    chrisflex auth status                  Show connected providers
+
   ${'\x1b[1m'}Configuration${'\x1b[0m'}
     chrisflex settings                     View all settings
     chrisflex settings -s git.autoBranch=true  Update a setting
@@ -179,15 +188,51 @@ program
     }
   });
 
-// Show animated banner when no command is given (just `chrisflex`)
-// Commander sets args to the command args — if no command, argv length is 2 (node + script)
-const args = process.argv.slice(2);
-if (args.length === 0 || args[0] === '--banner') {
-  showBanner().then(() => {
-    if (args[0] !== '--banner') {
-      program.outputHelp();
+// Auth — manage API keys for AI providers
+program
+  .command('auth [provider]')
+  .description('Manage AI provider authentication (github, anthropic, openai, gemini)')
+  .action(async (provider?: string) => {
+    try {
+      await authCommand(provider);
+    } catch (err) {
+      log.error(err instanceof Error ? err.message : String(err));
+      process.exit(1);
     }
   });
+
+// Chat — launch interactive AI REPL directly
+program
+  .command('chat')
+  .description('Start interactive AI chat mode')
+  .action(async () => {
+    await launchInteractive();
+  });
+
+// Launch interactive mode
+async function launchInteractive(): Promise<void> {
+  try {
+    // Dynamic import to avoid loading React/Ink unless needed
+    const { render } = await import('ink');
+    const { createElement } = await import('react');
+    const { App } = await import('./interactive/app.js');
+
+    await showBanner();
+    render(createElement(App));
+  } catch (err) {
+    log.error(`Failed to launch interactive mode: ${err instanceof Error ? err.message : String(err)}`);
+    process.exit(1);
+  }
+}
+
+// Show animated banner when no command is given (just `chrisflex`)
+// No args → launch interactive AI REPL
+// --banner → just show banner
+const args = process.argv.slice(2);
+if (args.length === 0) {
+  launchInteractive();
+} else if (args[0] === '--banner') {
+  showBanner();
 } else {
   program.parse();
 }
