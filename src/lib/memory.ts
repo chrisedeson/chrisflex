@@ -171,7 +171,7 @@ export async function syncMemoryIndex(flexDir: string): Promise<void> {
   if (lessonsStart !== -1 && lessonsEnd !== -1) {
     const lessonsSection =
       lessonLines.length > 0
-        ? lessonLines.map((l) => `- ${l.split('|').slice(3, 4).join('').trim()}`).join('\n')
+        ? lessonLines.map((l) => `- ${l.split('|').slice(4, 5).join('').trim()}`).join('\n')
         : '_None yet. Use `chrisflex lesson "your lesson"` to add._';
     content =
       content.slice(0, lessonsStart) +
