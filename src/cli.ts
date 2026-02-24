@@ -9,6 +9,7 @@ import { resumeCommand } from './commands/resume.js';
 import { quickCommand } from './commands/quick.js';
 import { settingsCommand } from './commands/settings.js';
 import { installCommand } from './commands/install.js';
+import { showBanner } from './lib/banner.js';
 import * as log from './lib/logger.js';
 
 const program = new Command();
@@ -16,7 +17,7 @@ const program = new Command();
 program
   .name('chrisflex')
   .description('Lean AI coding workflow manager with persistent memory')
-  .version('0.1.0');
+  .version('0.1.1');
 
 // Init — create .chrisflex/ in current project
 program
@@ -178,4 +179,15 @@ program
     }
   });
 
-program.parse();
+// Show animated banner when no command is given (just `chrisflex`)
+// Commander sets args to the command args — if no command, argv length is 2 (node + script)
+const args = process.argv.slice(2);
+if (args.length === 0 || args[0] === '--banner') {
+  showBanner().then(() => {
+    if (args[0] !== '--banner') {
+      program.outputHelp();
+    }
+  });
+} else {
+  program.parse();
+}

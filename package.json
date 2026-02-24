@@ -1,6 +1,6 @@
 {
   "name": "chrisflex",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Lean AI coding workflow manager with persistent memory. Solves context compaction, 200-line doc limits, and token waste.",
   "type": "module",
   "bin": {
