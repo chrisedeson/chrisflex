@@ -10,6 +10,7 @@ import { quickCommand } from './commands/quick.js';
 import { settingsCommand } from './commands/settings.js';
 import { installCommand } from './commands/install.js';
 import { authCommand } from './commands/auth.js';
+import { loginCommand, logoutCommand } from './commands/login.js';
 import { showBanner } from './lib/banner.js';
 import * as log from './lib/logger.js';
 
@@ -158,11 +159,12 @@ program
     chrisflex quick -s todo "add tests"    Log a todo item
 
   ${'\x1b[1m'}AI Chat${'\x1b[0m'}
+    chrisflex login                        Login with GitHub (opens browser)
     chrisflex                              Launch interactive AI REPL
     chrisflex chat                         Same — start AI chat mode
-    chrisflex auth github                  Connect GitHub Models (free!)
-    chrisflex auth anthropic               Connect Anthropic (Claude)
-    chrisflex auth openai                  Connect OpenAI
+    chrisflex logout                       Remove GitHub credentials
+    chrisflex auth anthropic               Manually set Anthropic API key
+    chrisflex auth openai                  Manually set OpenAI API key
     chrisflex auth status                  Show connected providers
 
   ${'\x1b[1m'}Configuration${'\x1b[0m'}
@@ -188,13 +190,39 @@ program
     }
   });
 
-// Auth — manage API keys for AI providers
+// Auth — manage API keys for AI providers (manual)
 program
   .command('auth [provider]')
-  .description('Manage AI provider authentication (github, anthropic, openai, gemini)')
+  .description('Manually set API keys for providers (github, anthropic, openai, gemini)')
   .action(async (provider?: string) => {
     try {
       await authCommand(provider);
+    } catch (err) {
+      log.error(err instanceof Error ? err.message : String(err));
+      process.exit(1);
+    }
+  });
+
+// Login — OAuth Device Flow for GitHub (recommended)
+program
+  .command('login')
+  .description('Login to GitHub via browser (OAuth Device Flow — recommended)')
+  .action(async () => {
+    try {
+      await loginCommand();
+    } catch (err) {
+      log.error(err instanceof Error ? err.message : String(err));
+      process.exit(1);
+    }
+  });
+
+// Logout — remove GitHub credentials
+program
+  .command('logout')
+  .description('Remove saved GitHub credentials')
+  .action(async () => {
+    try {
+      await logoutCommand();
     } catch (err) {
       log.error(err instanceof Error ? err.message : String(err));
       process.exit(1);
